@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="318" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="28" from="318" to="013791823360" trunk="568116954" callid="28700" />
+   <ext id="318" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ANSWERED">
+   <outer id="30" from="338" to="013598823657" trunk="86421163" callid="28702" />
+   <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="318" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="2620150804100123-0">
+  <callid>28700</callid>
+  <outer id="28" />
+  <TimeStart>20150804100056</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>318</CPN>
+  <CDPN>013791823360</CDPN>
+  <TimeEnd>20150804100123</TimeEnd>
+  <Duration>0</Duration>
+  <TrunkNumber>568116954</TrunkNumber>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="28" from="318" to="013791823360" trunk="568116954" callid="28700" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+  <ext id="338" />
+   <outer id="30" from="338" to="013598823657" trunk="86421163" callid="28702" />
+  <recording>20150804/338_013598823657_20150804-100112_28702</recording>
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="2720150804100224-0">
+  <callid>28702</callid>
+  <outer id="30" />
+  <TimeStart>20150804100105</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>338</CPN>
+  <CDPN>013598823657</CDPN>
+  <TimeEnd>20150804100224</TimeEnd>
+  <Duration>72</Duration>
+  <TrunkNumber>86421163</TrunkNumber>
+  <Recording>20150804/338_013598823657_20150804-100112_28702</Recording>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="327" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="31" from="327" to="05336297676" trunk="568116952" callid="28703" />
+   <ext id="327" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ANSWERED">
+   <outer id="31" from="327" to="05336297676" trunk="568116952" callid="28703" />
+   <ext id="327" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="32" from="338" to="015896680656" trunk="568116939" callid="28704" />
+   <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="32" from="338" to="015896680656" trunk="568116939" callid="28704" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="2820150804100625-0">
+  <callid>28704</callid>
+  <outer id="32" />
+  <TimeStart>20150804100617</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>338</CPN>
+  <CDPN>015896680656</CDPN>
+  <TimeEnd>20150804100625</TimeEnd>
+  <Duration>0</Duration>
+  <TrunkNumber>568116939</TrunkNumber>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="33" from="338" to="015896680656" trunk="568116939" callid="28705" />
+   <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="2920150804100637-0">
+  <callid>28705</callid>
+  <outer id="33" />
+  <TimeStart>20150804100626</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>338</CPN>
+  <CDPN>015896680656</CDPN>
+  <TimeEnd>20150804100637</TimeEnd>
+  <Duration>0</Duration>
+  <TrunkNumber>568116939</TrunkNumber>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="33" from="338" to="015896680656" trunk="568116939" callid="28705" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="3020150804100639-0">
+  <callid>28703</callid>
+  <outer id="31" />
+  <TimeStart>20150804100257</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>327</CPN>
+  <CDPN>05336297676</CDPN>
+  <TimeEnd>20150804100639</TimeEnd>
+  <Duration>203</Duration>
+  <TrunkNumber>568116952</TrunkNumber>
+  <Recording>20150804/327_05336297676_20150804-100317_28703</Recording>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+  <ext id="327" />
+   <outer id="31" from="327" to="05336297676" trunk="568116952" callid="28703" />
+  <recording>20150804/327_05336297676_20150804-100317_28703</recording>
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="31" from="327" to="05336297676" trunk="568116952" callid="28703" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="327" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="34" from="338" to="015896600656" trunk="568116939" callid="28706" />
+   <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="3120150804100815-0">
+  <callid>28706</callid>
+  <outer id="34" />
+  <TimeStart>20150804100753</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>338</CPN>
+  <CDPN>015896600656</CDPN>
+  <TimeEnd>20150804100815</TimeEnd>
+  <Duration>0</Duration>
+  <TrunkNumber>568116939</TrunkNumber>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="34" from="338" to="015896600656" trunk="568116939" callid="28706" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="ALERT">
+   <outer id="36" from="338" to="037964897007" trunk="568116939" callid="28708" />
+   <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="IDLE">
+  <ext id="338" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Cdr id="3220150804100941-0">
+  <callid>28708</callid>
+  <outer id="36" />
+  <TimeStart>20150804100843</TimeStart>
+  <Type>OU</Type>
+  <Route>IP</Route>
+  <CPN>338</CPN>
+  <CDPN>037964897007</CDPN>
+  <TimeEnd>20150804100941</TimeEnd>
+  <Duration>0</Duration>
+  <TrunkNumber>568116939</TrunkNumber>
+</Cdr>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BYE">
+   <outer id="36" from="338" to="037964897007" trunk="568116939" callid="28708" />
+</Event>
+<?xml version="1.0" encoding="utf-8" ?>
+<Event attribute="BUSY">
+  <ext id="327" />
+</Event>
