@@ -21,23 +21,23 @@ class Rec_record_api extends CI_Controller {
      * @todo 解析xml请求
      */
     public function rec($flag = 'jinan') {
-//        $xmldata = file_get_contents('php://input');
-//        file_put_contents('a.txt', $flag, FILE_APPEND);
-        $xmldata = <<<xmldata
-<Cdr id="36120150806172024-0">
-  <callid>45215</callid>
-  <outer id="159" />
-  <TimeStart>20150806172007</TimeStart>
-  <Type>OU</Type>
-  <Route>IP</Route>
-  <CPN>211</CPN>
-  <CDPN>013698612744</CDPN>
-  <TimeEnd>20150806172023</TimeEnd>
-  <Duration>8</Duration>
-  <TrunkNumber>86429163</TrunkNumber>
-  <Recording>20150806/339_015552777889_20150806-172016_45215</Recording>
-</Cdr>
-xmldata;
+        $xmldata = file_get_contents('php://input');
+//        file_put_contents('a.txt', $xmldata, FILE_APPEND);
+//        $xmldata = <<<xmldata
+//<Cdr id="36120150806172024-0">
+//  <callid>45215</callid>
+//  <outer id="159" />
+//  <TimeStart>20150806172007</TimeStart>
+//  <Type>OU</Type>
+//  <Route>IP</Route>
+//  <CPN>211</CPN>
+//  <CDPN>013698612744</CDPN>
+//  <TimeEnd>20150806172023</TimeEnd>
+//  <Duration>8</Duration>
+//  <TrunkNumber>86429163</TrunkNumber>
+//  <Recording>20150806/339_015552777889_20150806-172016_45215</Recording>
+//</Cdr>
+//xmldata;
         $this->_classify_query($xmldata, $flag);
     }
 
@@ -85,7 +85,7 @@ xmldata;
                             $memdata['count'] = $count;
                         }
                         //有效期限 8小时
-                        $mem->set_expire($key, $memdata,28800);
+                        $mem->set_expire($key, $memdata, 28800);
                     }
                 }
             case 'Event':
