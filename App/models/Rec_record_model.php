@@ -41,50 +41,48 @@ class Rec_record_model extends CI_Model {
      */
     public function insert_cdr_data($data, $telnum_userinfo, $flag) {
         $num_userinfo = $telnum_userinfo[$flag];
-        if (!empty($num_userinfo)) {
-            //通话的唯一标识
-            $cdr_data['callid'] = $data['callid']['val'];
-            //$cdr_data['visitor'] = $data['visitor']['attr']['id'];
-            //类型 IN 打入 OU 打出  FI 呼叫转移入 FW 呼叫转移出 LO 内部通话 CB 双向外呼
-            $cdr_data['type'] = $data['Type']['val'];
-            $cdr_data['timestart'] = strtotime($data['TimeStart']['val']);
-            $cdr_data['timeend'] = strtotime($data['TimeEnd']['val']);
-            $cdr_data['route'] = $data['Route']['val'];
-            if ($cdr_data['type'] == 'OU' || $cdr_data['type'] == 'FW') {
-                //telnum  打入的或者打出的客户    
-                $cdr_data['telnum'] = $data['CDPN']['val'];
-                //分机号码
-                $cdr_data['ext_num'] = $data['CPN']['val'];
-            } else {
-                //telnum  打入的或者打出的客户       打入打出的电话要交换顺序
-                $cdr_data['telnum'] = $data['CPN']['val'];
-                //分机号码
-                $cdr_data['ext_num'] = $data['CDPN']['val'];
-            }
-            //还需要判断一下是不是存在这个信息
-            $ext_num = $cdr_data['ext_num'];
-            $cdr_data['user_id'] = array_key_exists($ext_num, $num_userinfo) ? $num_userinfo[$ext_num] : 0;
-            //通话的时间长度
-            $cdr_data['duration'] = $data['Duration']['val'];
-            //中继号码
-            $cdr_data['trunknum'] = $data['TrunkNumber']['val'];
-            //记录文件的名字
-            $cdr_data['rec_name'] = $data['Recording']['val'];
-            $cdr_data['flag'] = $data['flag'];
-            $cdr_data['addtime'] = time();
-        } else {
+        if (empty($num_userinfo)) {
             //异常问题
-            file_put_contents('error.log', "memcache 或者 数据库获取分机号码=>user_id  失败。\r\n", FILE_APPEND);
+            file_put_contents('error.log', "{$flag} 地址，memcache 或者 数据库获取分机号码=>user_id  失败。\r\n", FILE_APPEND);
             //以后可以发送邮件报警  说明问题。
-            exit;
         }
+        //通话的唯一标识
+        $cdr_data['callid'] = $data['callid']['val'];
+        //$cdr_data['visitor'] = $data['visitor']['attr']['id'];
+        //类型 IN 打入 OU 打出  FI 呼叫转移入 FW 呼叫转移出 LO 内部通话 CB 双向外呼
+        $cdr_data['type'] = $data['Type']['val'];
+        $cdr_data['timestart'] = strtotime($data['TimeStart']['val']);
+        $cdr_data['timeend'] = strtotime($data['TimeEnd']['val']);
+        $cdr_data['route'] = $data['Route']['val'];
+        if ($cdr_data['type'] == 'OU' || $cdr_data['type'] == 'FW') {
+            //telnum  打入的或者打出的客户    
+            $cdr_data['telnum'] = $data['CDPN']['val'];
+            //分机号码
+            $cdr_data['ext_num'] = $data['CPN']['val'];
+        } else {
+            //telnum  打入的或者打出的客户       打入打出的电话要交换顺序
+            $cdr_data['telnum'] = $data['CPN']['val'];
+            //分机号码
+            $cdr_data['ext_num'] = $data['CDPN']['val'];
+        }
+        //还需要判断一下是不是存在这个信息
+        $ext_num = $cdr_data['ext_num'];
+        $cdr_data['user_id'] = array_key_exists($ext_num, $num_userinfo) ? $num_userinfo[$ext_num] : 0;
+        //通话的时间长度
+        $cdr_data['duration'] = $data['Duration']['val'];
+        //中继号码
+        $cdr_data['trunknum'] = $data['TrunkNumber']['val'];
+        //记录文件的名字
+        $cdr_data['rec_name'] = $data['Recording']['val'];
+        $cdr_data['flag'] = $data['flag'];
+        $cdr_data['addtime'] = time();
         if ($cdr_data['duration']) {
             //这个地方要实现匹配客户联系人 还有客户信息需要切割客户
             $telnum = $this->get_telnum($cdr_data['telnum']);
             $this->get_customerinfo_bytelnum($cdr_data, $telnum);
 //            print_r($cdr_data);
             //新的添加的数据  contact_id  cus_id
-             $this->db->insert('voice_cdr', $cdr_data);
+            $this->db->insert('voice_cdr', $cdr_data);
             return array($cdr_data, $this->db->insert_id());
         }
         return array($cdr_data, false);
