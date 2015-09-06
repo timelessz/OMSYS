@@ -3,15 +3,17 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * 呼叫的详细记录报告话单 解析记录
+ * 1 呼叫的详细记录报告话单 解析记录  
+ * 2 事件类型的记录解析
  * @author timeless
  */
-class Cdr_resolve {
+class Xml_resolve {
 
     /**
-     * 解析Cdr数据   形成数组    
-     * @param obj $cdr_xml_obj  要解析的xml文档对象
-     * @access private
+     * 解析Xml数据   形成数组    
+     * @param obj $xml_obj  要解析的xml文档对象
+     * @param flag $flag 标签表示是什么地方的
+     * @access public
      * @return array 返回的数值类型如下
      */
 //        $demo = Array(

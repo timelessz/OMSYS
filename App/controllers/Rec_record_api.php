@@ -10,9 +10,90 @@ class Rec_record_api extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        //加载模型信息
+//加载模型信息
         $this->load->model('Rec_record_model', 'R');
     }
+
+    /**
+     * 
+      //电话状态变为忙碌
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="BUSY">
+      <ext id="318" />
+      </Event>
+      //回铃事件
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="ALERT">
+      <outer id="186" from="326" to="013693848899" trunk="568116531" callid="20666" />
+      <ext id="326" />
+      </Event>
+      //呼叫应答
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="ANSWERED">
+      <outer id="186" from="326" to="013693848899" trunk="568116531" callid="20666" />
+      <ext id="326" />
+      </Event>
+      //通话结束事件
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="BYE">
+      <ext id="326" />
+      <outer id="186" from="326" to="013693848899" trunk="568116531" callid="20666" />
+      <recording>20150824/326_013693848899_20150824-104404_20666</recording>
+      </Event>
+      //通话结束
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="BYE">
+      <outer id="186" from="326" to="013693848899" trunk="568116531" callid="20666" />
+      </Event>
+      //话单数据
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Cdr id="14420150824104517-0">
+      <callid>20666</callid>
+      <outer id="186" />
+      <TimeStart>20150824104339</TimeStart>
+      <Type>OU</Type>
+      <Route>IP</Route>
+      <CPN>326</CPN>
+      <CDPN>013693848899</CDPN>
+      <TimeEnd>20150824104517</TimeEnd>
+      <Duration>73</Duration>
+      <TrunkNumber>568116531</TrunkNumber>
+      <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
+      </Cdr>
+      //分机由忙碌变为正在忙的时候
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="IDLE">
+      <ext id="326" />
+      </Event>
+     */
+    /**
+     * 思路解析
+     * 首先 拨打电话  接通之后 会接收到 event xml 类型是 answered 解析之后 添加到memcached 中 然后 挂断之后 会发送cdr 话单数据 
+     * Array
+      (
+      [user_id] => 28
+      [callid] => 20666
+      [tel_num] => 13698612743
+      [ext_num] => 326
+      [type] => IN
+      [cdr_info] => Array
+      (
+      [callid] => 20666
+      [type] => OU
+      [timestart] => 1440384219
+      [timeend] => 1440384317
+      [route] => IP
+      [telnum] => 013693848899
+      [ext_num] => 326
+      [user_id] => 28
+      [duration] => 73
+      [trunknum] => 568116531
+      [rec_name] => 20150824/326_013693848899_20150824-104404_20666
+      [flag] => jinan
+      [addtime] => 1440488492
+      )
+      )
+     */
 
     /**
      * 接受om发送的请求
@@ -21,23 +102,30 @@ class Rec_record_api extends CI_Controller {
      * @todo 解析xml请求
      */
     public function rec($flag = 'jinan') {
-        $xmldata = file_get_contents('php://input');
+//        $xmldata = file_get_contents('php://input');
 //        file_put_contents('a.txt', $xmldata, FILE_APPEND);
-//        $xmldata = <<<xmldata
-//<Cdr id="36120150806172024-0">
-//  <callid>45215</callid>
-//  <outer id="159" />
-//  <TimeStart>20150806172007</TimeStart>
-//  <Type>OU</Type>
-//  <Route>IP</Route>
-//  <CPN>211</CPN>
-//  <CDPN>013698612744</CDPN>
-//  <TimeEnd>20150806172023</TimeEnd>
-//  <Duration>8</Duration>
-//  <TrunkNumber>86429163</TrunkNumber>
-//  <Recording>20150806/339_015552777889_20150806-172016_45215</Recording>
-//</Cdr>
-//xmldata;
+        $xmldata = <<<xmldata
+<Cdr id="14420150824104517-0">
+    <callid>20666</callid>
+    <outer id="186" />
+    <TimeStart>20150824104339</TimeStart>
+    <Type>OU</Type>
+    <Route>IP</Route>
+    <CPN>208</CPN>
+    <CDPN>013698612747</CDPN>
+    <TimeEnd>20150824104517</TimeEnd>
+    <Duration>73</Duration>
+    <TrunkNumber>568116531</TrunkNumber>
+    <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
+    </Cdr>
+xmldata;
+        echo '<pre>';
+        $xmldata = <<<xmldata
+<Event attribute="ANSWERED">
+   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
+   <ext id="208" />
+</Event>
+xmldata;
         $this->_classify_query($xmldata, $flag);
     }
 
@@ -47,6 +135,8 @@ class Rec_record_api extends CI_Controller {
      * @access private
      */
     private function _classify_query($xmldata, $flag) {
+        include_once APPPATH . '/controllers/Memcache_manage.php';
+        include_once APPPATH . '/controllers/Xml_resolve.php';
         $xml_obj = simplexml_load_string($xmldata);
         //获取根节点
         $root_name = $xml_obj->getName();
@@ -55,41 +145,76 @@ class Rec_record_api extends CI_Controller {
         switch ($root_name) {
             case 'Cdr':
                 //调用 呼叫详细信息报告  解析控制器
-                include_once APPPATH . '/controllers/Cdr_resolve.php';
-                include_once APPPATH . '/controllers/Memcache_manage.php';
-                $cdr_obj = new Cdr_resolve();
+                $cdr_obj = new Xml_resolve();
                 //解析成为array
                 $data = $cdr_obj->resolve($xml_obj, $flag);
                 //获取   分机号码=>用户的id
-                $telnum_userinfo = $this->mem_manage($root_name, $flag);
+                $telnum_userinfo = $this->get_telnum_user_info($flag);
                 //$cdr_data  表示 本次请求的数据  包含没有打通的电话   $stauts表示添加成功失败
-                list($cdr_data, $status) = $this->R->insert_cdr_data($data, $telnum_userinfo, $flag);
-                if ($status) {
-                    //表示提价成功的   存储在数据库中
-                    $user_id = $cdr_data['user_id'];
-                    if ($user_id) {
-                        //往memcache 中存储数据  
-                        $mem = new Memcache_manage();
-                        $mem->memcache();
-                        $key = "{$user_id}";
-                        $cdr_mem_data = $mem->get($key);
-                        if ($cdr_mem_data) {
-                            //最大的数值
-                            $memdata['max_id'] = $status;
-                            //今天的电话总的数量
-                            $memdata['count'] = $cdr_mem_data['count'] + 1;
-                        } else {
-                            //获取本日的数据数量
-                            $count = $this->R->get_usercdr_today_count($user_id);
-                            $memdata['max_id'] = $status;
-                            $memdata['count'] = $count;
-                        }
-                        //有效期限 8小时
-                        $mem->set_expire($key, $memdata, 28800);
+                $cdr_data = $this->R->resolve_cdr_data($data, $telnum_userinfo, $flag);
+                //表示提交成功的   存储在数据库中
+                $user_id = $cdr_data['user_id'];
+                if (!$user_id) {
+                    file_put_contents('error.log', "{$cdr_data['ext_num']}没有绑定职员");
+                    return;
+                }
+                //往memcache 中存储数据  
+                $mem = new Memcache_manage();
+                $mem->memcache();
+                //获取应答的模式下的信息
+                $answered_data = $mem->get($user_id);
+                //根据answered_data数据获取数据
+                $cdr_data['cus_id'] = $answered_data['cus_id'];
+                $cdr_data['contact_id'] = $answered_data['contact_id'];
+                if ($cdr_data['duration']) {
+                    //成功的话 这个返回值是 $status
+                    $status = $this->R->insert_cdr_data($cdr_data);
+                    if (!$status) {
+                        file_put_contents('error.log', "cdr数据解析添加到数据库失败  $xmldata");
+                        return;
+                    } else {
+                        $cdr_data['id'] = $status;
                     }
                 }
+                //获取 answered 数据之后
+                $cdr_callid = $cdr_data['callid'];
+                $answered_callid = $answered_data['callid'];
+                if ($cdr_callid == $answered_callid) {
+                    $answered_data['cdr_info'] = $cdr_data;
+                    $mem->set_expire($user_id, $answered_data, 28800);
+                    print_r($answered_data);
+                } else {
+                    //如果不相等的 删除该键值
+                    $mem->delete($user_id);
+                }
             case 'Event':
-                //然后根据当前的操作请求
+                //表明时事件请求
+                $event_obj = new Xml_resolve();
+                $data = $event_obj->resolve($xml_obj, $flag);
+//                print_r($data);
+                switch ($root_attr) {
+                    case'ANSWERED':
+                        //获取   分机号码=>用户的id
+                        $telnum_userinfo = $this->get_telnum_user_info($flag);
+                        //应答类型的操作   需要匹配出来用户的id
+                        $answered_data = $this->R->resolve_answered_data($data, $telnum_userinfo, $flag);
+                        //然后存储数据到memcache
+                        if (!$answered_data['user_id']) {
+                            //表示没有匹配到数据
+                            file_put_contents('error.log', "{$answered_data['ext_num']}没有绑定职员");
+                            return;
+                        }
+                        $mem = new Memcache_manage();
+                        $mem->memcache();
+                        $key = $answered_data['user_id'];
+                        $mem->set_expire($key, $answered_data, 28800);
+//                        print_r($answered_data);
+                        break;
+                    default:
+                        //不执行操作
+                        return;
+                        break;
+                }
                 break;
             default:
                 break;
@@ -97,26 +222,22 @@ class Rec_record_api extends CI_Controller {
     }
 
     /**
-     * memcache操作
-     * @param string $root_name 根节点的信息
+     * memcache操作   获取 分机号码=> user_id 数据  用于匹配分机号码的id       首先从memcached 中获取数据  如果没有的  从数据库中获取  
      * @param string $flag 标志是哪一个地方的请求  比如 是河南的或者是 济南的
      * @access private
      */
-    private function mem_manage($root_name, $flag) {
+    private function get_telnum_user_info($flag) {
         $mem = new Memcache_manage();
         $mem->memcache();
-        if ($root_name == 'Cdr') {
-            //首先从数据库中取出数据   看看是不是存在   不存在的话执行 sql 操作 然后添加到memcache中
-            $key = $flag . '_telnum_userid_key';
-            $data = array();
-            $data = $mem->get($key);
-            if (!$data) {
-                $data = $this->R->get_user_info($flag);
-                $mem->set($key, $data);
-            }
-            return $data;
+        //首先从数据库中取出数据   看看是不是存在   不存在的话执行 sql 操作 然后添加到memcache中
+        $key = $flag . '_telnum_userid_key';
+        $data = array();
+        $data = $mem->get($key);
+        if (!$data) {
+            $data = $this->R->get_user_info($flag);
+            $mem->set($key, $data);
         }
-        return array();
+        return $data;
     }
 
 }

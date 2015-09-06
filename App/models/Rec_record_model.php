@@ -39,7 +39,7 @@ class Rec_record_model extends CI_Model {
      * @param string $flag 标记属于什么地方 
      * @access public
      */
-    public function insert_cdr_data($data, $telnum_userinfo, $flag) {
+    public function resolve_cdr_data($data, $telnum_userinfo, $flag) {
         $num_userinfo = $telnum_userinfo[$flag];
         if (empty($num_userinfo)) {
             //异常问题
@@ -76,16 +76,54 @@ class Rec_record_model extends CI_Model {
         $cdr_data['rec_name'] = $data['Recording']['val'];
         $cdr_data['flag'] = $data['flag'];
         $cdr_data['addtime'] = time();
-        if ($cdr_data['duration']) {
-            //这个地方要实现匹配客户联系人 还有客户信息需要切割客户
-            $telnum = $this->get_telnum($cdr_data['telnum']);
-            $this->get_customerinfo_bytelnum($cdr_data, $telnum);
-//            print_r($cdr_data);
-            //新的添加的数据  contact_id  cus_id
-            $this->db->insert('voice_cdr', $cdr_data);
-            return array($cdr_data, $this->db->insert_id());
+        return $cdr_data;
+    }
+
+    /**
+     * 添加cdr 数据
+     * @param array $data 要添加的 cdr数据
+     * @return status boolean 
+     */
+    public function insert_cdr_data($data) {
+        //新的添加的数据  contact_id  cus_id
+        $this->db->insert('voice_cdr', $data);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * 解析应答数据 answered数据
+     * @param array $data 解析成数组之后的数据
+     * @param array $telnum_userid_info 
+     */
+    public function resolve_answered_data($data, $telnum_userid_info, $flag) {
+        $outer_attr_arr = $data['outer']['attr'];
+        //分机号码
+        $ext_num = $data['ext']['attr']['id'];
+        //打进或者打出的号码
+        if ($outer_attr_arr['to'] == $ext_num) {
+            $telnum = $outer_attr_arr['from'];
+            $tag = 'IN';
+        } else {
+            $telnum = $outer_attr_arr['to'];
+            $tag = 'OU';
         }
-        return array($cdr_data, false);
+        //号码分割之后要匹配的号码   之后要执行 匹配数据
+        $tel_num = $this->get_telnum($telnum);
+        //如果没有匹配到user_id的话 
+        //匹配到用户user_id信息
+        $telnum_info = $telnum_userid_info[$flag];
+        $answered_data = array();
+        $answered_data['user_id'] = array_key_exists($ext_num, $telnum_info) ? $telnum_info[$ext_num] : 0;
+        //通化的话单的id
+        $answered_data['callid'] = $outer_attr_arr['callid'];
+        $answered_data['tel_num'] = $tel_num;
+        $answered_data['ext_num'] = $ext_num;
+        $answered_data['type'] = $tag;
+        $cus_data = $this->get_customerinfo_bytelnum($tel_num);
+        //通化的类型  是打进还是打出
+        $answered_data['cus_id'] = $cus_data['cus_id'];
+        $answered_data['contact_id'] = $cus_data['contact_id'];
+        return $answered_data;
     }
 
     /**
@@ -146,49 +184,50 @@ class Rec_record_model extends CI_Model {
      * @param string $telnum 截取到的电话号码
      * @return 
      */
-    private function get_customerinfo_bytelnum(&$data, $telnum) {
+    private function get_customerinfo_bytelnum($telnum) {
         $this->db->like('tel', $telnum);
         $this->db->or_like('phone', $telnum);
         $this->db->limit(0, 1);
         $this->db->select('id,cus_id');
         $query = $this->db->get('customer_contact');
+        $data = array('cus_id' => 0, 'contact_id' => 0);
         foreach ($query->result() as $row) {
             if ($row) {
                 $data['cus_id'] = $row->cus_id;
                 $data['contact_id'] = $row->id;
             }
         }
+        return $data;
     }
 
-    /**
-     * 获取cdr记录最大的数据
-     * @param int $user_id 用户_id
-     * @return int 最大的数值   没有查询到的返回0
-     */
-    public function get_usercdr_max_id($user_id) {
-        $this->db->where('user_id', $user_id);
-        $this->db->select_max('id');
-        $max_id = $this->db->get('voice_cdr');
-        foreach ($max_id->result() as $rows) {
-            $max = $rows->id;
-        }
-        return empty($max) ? 0 : $max;
-    }
-
-    /**
-     * 获取本日的数据数量
-     * @param int $user_id 用户_id
-     * @return int 数量
-     */
-    public function get_usercdr_today_count($user_id) {
-        $starttime = strtotime(date('Y-m-d', time()));
-        $endtime = $starttime + 86400;
-        $where = "addtime > $starttime and addtime < $endtime and user_id=$user_id";
-        $this->db->where($where);
-        $this->db->from('voice_cdr');
-        return $this->db->count_all_results();
-    }
-
+//    /**
+//     * 获取cdr记录最大的数据
+//     * @param int $user_id 用户_id
+//     * @return int 最大的数值   没有查询到的返回0
+//     */
+//    public function get_usercdr_max_id($user_id) {
+//        $this->db->where('user_id', $user_id);
+//        $this->db->select_max('id');
+//        $max_id = $this->db->get('voice_cdr');
+//        foreach ($max_id->result() as $rows) {
+//            $max = $rows->id;
+//        }
+//        return empty($max) ? 0 : $max;
+//    }
+//
+//    /**
+//     * 获取本日的数据数量
+//     * @param int $user_id 用户_id
+//     * @return int 数量
+//     */
+//    public function get_usercdr_today_count($user_id) {
+//        $starttime = strtotime(date('Y-m-d', time()));
+//        $endtime = $starttime + 86400;
+//        $where = "addtime > $starttime and addtime < $endtime and user_id=$user_id";
+//        $this->db->where($where);
+//        $this->db->from('voice_cdr');
+//        return $this->db->count_all_results();
+//    }
 //    function get_last_ten_entries() {
 //        $query = $this->db->get('entries', 10);
 //        return $query->result();
