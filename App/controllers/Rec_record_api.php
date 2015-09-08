@@ -104,28 +104,43 @@ class Rec_record_api extends CI_Controller {
     public function rec($flag = 'jinan') {
 //        $xmldata = file_get_contents('php://input');
 //        file_put_contents('a.txt', $xmldata, FILE_APPEND);
-        $xmldata = <<<xmldata
-<Cdr id="14420150824104517-0">
-    <callid>20666</callid>
-    <outer id="186" />
-    <TimeStart>20150824104339</TimeStart>
-    <Type>OU</Type>
-    <Route>IP</Route>
-    <CPN>208</CPN>
-    <CDPN>013698612747</CDPN>
-    <TimeEnd>20150824104517</TimeEnd>
-    <Duration>73</Duration>
-    <TrunkNumber>568116531</TrunkNumber>
-    <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
-    </Cdr>
+//        $xmldata = <<<xmldata
+//<Cdr id="14420150824104517-0">
+//    <callid>20666</callid>
+//    <outer id="186" />
+//    <TimeStart>20150824104339</TimeStart>
+//    <Type>OU</Type>
+//    <Route>IP</Route>
+//    <CPN>208</CPN>
+//    <CDPN>013698612747</CDPN>
+//    <TimeEnd>20150824104517</TimeEnd>
+//    <Duration>73</Duration>
+//    <TrunkNumber>568116531</TrunkNumber>
+//    <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
+//    </Cdr>
+//xmldata;
+        $xmldata=<<<xmldata
+<Cdr id="25820150907112458-0">
+ <callid>37015</callid>
+ <outer id="148" />
+ <TimeStart>20150907112307</TimeStart>
+ <Type>OU</Type>
+ <Route>XO</Route>
+ <CPN>342</CPN>
+ <CDPN>4006750000</CDPN>
+ <TimeEnd>20150907112458</TimeEnd>
+ <Duration>93</Duration>
+ <TrunkNumber>86343263</TrunkNumber>
+ <Recording>20150907/342_4006750000_20150907-112325_37015</Recording>
+</Cdr>
 xmldata;
         echo '<pre>';
-        $xmldata = <<<xmldata
-<Event attribute="ANSWERED">
-   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
-   <ext id="208" />
-</Event>
-xmldata;
+//        $xmldata = <<<xmldata
+//<Event attribute="ANSWERED">
+//   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
+//   <ext id="208" />
+//</Event>
+//xmldata;
         $this->_classify_query($xmldata, $flag);
     }
 
@@ -166,6 +181,7 @@ xmldata;
                 //根据answered_data数据获取数据
                 $cdr_data['cus_id'] = $answered_data['cus_id'];
                 $cdr_data['contact_id'] = $answered_data['contact_id'];
+//                print_r($cdr_data);
                 if ($cdr_data['duration']) {
                     //成功的话 这个返回值是 $status
                     $status = $this->R->insert_cdr_data($cdr_data);

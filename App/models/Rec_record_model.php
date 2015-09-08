@@ -161,6 +161,9 @@ class Rec_record_model extends CI_Model {
                     }
                 }
                 break;
+            case 10:
+                //是 400的电话 
+                break;
             case 9:
                 //网络电话  不处理请求
                 break;
@@ -170,7 +173,6 @@ class Rec_record_model extends CI_Model {
             case 7:
             //直接也是电话
             default:
-                exit;
                 break;
         }
         //返回电话号码
