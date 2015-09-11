@@ -119,7 +119,7 @@ class Rec_record_api extends CI_Controller {
 //    <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
 //    </Cdr>
 //xmldata;
-        $xmldata=<<<xmldata
+        $xmldata = <<<xmldata
 <Cdr id="25820150907112458-0">
  <callid>37015</callid>
  <outer id="148" />
@@ -135,12 +135,12 @@ class Rec_record_api extends CI_Controller {
 </Cdr>
 xmldata;
         echo '<pre>';
-//        $xmldata = <<<xmldata
-//<Event attribute="ANSWERED">
-//   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
-//   <ext id="208" />
-//</Event>
-//xmldata;
+        $xmldata = <<<xmldata
+<Event attribute="ANSWERED">
+   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
+   <ext id="208" />
+</Event>
+xmldata;
         $this->_classify_query($xmldata, $flag);
     }
 
@@ -224,7 +224,28 @@ xmldata;
                         $mem->memcache();
                         $key = $answered_data['user_id'];
                         $mem->set_expire($key, $answered_data, 28800);
-//                        print_r($answered_data);
+                        //还要把每一天的第一个数据添加到数据库中
+                        //数据库中存储第一个信息
+                        $first_tel_key = $key . 'first_tel';
+                        $first_tel = $mem->get($first_tel_key);
+                        if (!$first_tel) {
+                            //有种可能是已经添加到数据库中但是mem中没有
+                            //从数据库中查看是不是含有该条记录  根据user_id 还有 根据时间
+                            $is_add = $this->R->get_first_tel_data($key);
+                            if ($is_add) {
+                                //之前数据库中添加了 只是在mem中不存在
+                                $mem->set_expire($first_tel_key, '1', 28800);
+                            } else {
+                                //数据库中没有添加  今天的第一次
+                                $status = $this->R->insert_first_tel_data($answered_data);
+                                //如果没有
+                                if (!$status) {
+                                    file_put_contents('error.log', "第一个电话添加失败 $xmldata");
+                                    return;
+                                }
+                                $mem->set_expire($first_tel_key, '1', 28800);
+                            }
+                        }
                         break;
                     default:
                         //不执行操作

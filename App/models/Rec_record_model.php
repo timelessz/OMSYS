@@ -202,50 +202,29 @@ class Rec_record_model extends CI_Model {
         return $data;
     }
 
-//    /**
-//     * 获取cdr记录最大的数据
-//     * @param int $user_id 用户_id
-//     * @return int 最大的数值   没有查询到的返回0
-//     */
-//    public function get_usercdr_max_id($user_id) {
-//        $this->db->where('user_id', $user_id);
-//        $this->db->select_max('id');
-//        $max_id = $this->db->get('voice_cdr');
-//        foreach ($max_id->result() as $rows) {
-//            $max = $rows->id;
-//        }
-//        return empty($max) ? 0 : $max;
-//    }
-//
-//    /**
-//     * 获取本日的数据数量
-//     * @param int $user_id 用户_id
-//     * @return int 数量
-//     */
-//    public function get_usercdr_today_count($user_id) {
-//        $starttime = strtotime(date('Y-m-d', time()));
-//        $endtime = $starttime + 86400;
-//        $where = "addtime > $starttime and addtime < $endtime and user_id=$user_id";
-//        $this->db->where($where);
-//        $this->db->from('voice_cdr');
-//        return $this->db->count_all_results();
-//    }
-//    function get_last_ten_entries() {
-//        $query = $this->db->get('entries', 10);
-//        return $query->result();
-//    }
-//
-//    function insert_entry() {
-//        $this->title = $_POST['title']; // 请阅读下方的备注
-//        $this->content = $_POST['content'];
-//        $this->date = time();
-//        $this->db->insert('entries', $this);
-//    }
-//
-//    function update_entry() {
-//        $this->title = $_POST['title'];
-//        $this->content = $_POST['content'];
-//        $this->date = time();
-//        $this->db->update('entries', $this, array('id' => $_POST['id']));
-//    }
+    /**
+     * 添加数据到数据库
+     * @param 分析得到的数据库信息 $answered_data 
+     * @return int 添加数据库之后的id
+     */
+    public function insert_first_tel_data($answered_data) {
+        $answered_data['addtime'] = time();
+        $this->db->insert('voice_firsttel', $answered_data);
+        return $this->db->insert_id();
+    }
+
+    /**
+     * 获取第一个电话信息  查询 指定今天的
+     * @access public
+     */
+    public function get_first_tel_data($user_id) {
+        $starttime = strtotime(date('Y-m-d 00:00:00', time()));
+        $stoptime = strtotime(date('Y-m-d 23:59:59', time()));
+        $this->db->where('user_id', $user_id);
+        $this->db->where('addtime <', $stoptime);
+        $this->db->where('addtime >', $starttime);
+        $query = $db = $this->db->get('voice_firsttel');
+        return $query->num_rows() > 0 ? true : false;
+    }
+
 }

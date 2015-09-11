@@ -22,7 +22,6 @@ class Xml_resolve {
 //            //标志是济南还是郑州
 //            'flag' => 'jinan'
 //        );
-
     public function resolve($xml_obj, $flag) {
         $data = array();
         foreach ($xml_obj->children() as $child) {
