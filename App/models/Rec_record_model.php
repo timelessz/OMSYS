@@ -54,11 +54,24 @@ class Rec_record_model extends CI_Model {
         $cdr_data['timestart'] = strtotime($data['TimeStart']['val']);
         $cdr_data['timeend'] = strtotime($data['TimeEnd']['val']);
         $cdr_data['route'] = $data['Route']['val'];
+        if ($cdr_data['route'] == 'XO') {
+            //这个停止执行  对于程序来说无效
+            exit;
+        }
         if ($cdr_data['type'] == 'OU' || $cdr_data['type'] == 'FW') {
-            //telnum  打入的或者打出的客户    
-            $cdr_data['telnum'] = $data['CDPN']['val'];
-            //分机号码
-            $cdr_data['ext_num'] = $data['CPN']['val'];
+            //telnum  打入的或者打出的客户
+            if ($cdr_data['route'] == 'OP') {
+                //表示是通过分机转接的是打进来的
+                $cdr_data['ext_num'] = $data['CDPN']['val'];
+                //分机号码
+                $cdr_data['telnum'] = $data['CPN']['val'];
+                //其实是通过分机转接进来的
+                $cdr_data['type'] = 'IN';
+            } else {
+                $cdr_data['telnum'] = $data['CDPN']['val'];
+                //分机号码
+                $cdr_data['ext_num'] = $data['CPN']['val'];
+            }
         } else {
             //telnum  打入的或者打出的客户       打入打出的电话要交换顺序
             $cdr_data['telnum'] = $data['CPN']['val'];
@@ -124,6 +137,35 @@ class Rec_record_model extends CI_Model {
         $answered_data['cus_id'] = $cus_data['cus_id'];
         $answered_data['contact_id'] = $cus_data['contact_id'];
         return $answered_data;
+    }
+
+    /**
+     * 解析的是外部分机打进来的号码
+     * @access public
+     */
+    public function resolve_answer_data($data, $telnum_userid_info, $flag) {
+        //分机号码
+        $ext_num = $data['ext']['attr']['id'];
+        $tag = 'IN';
+        $telnum = $data['visitor']['attr']['from'];
+        //号码分割之后要匹配的号码   之后要执行 匹配数据
+        $tel_num = $this->get_telnum($telnum);
+        //如果没有匹配到user_id的话 
+        //匹配到用户user_id信息
+        $telnum_info = $telnum_userid_info[$flag];
+        $answer_data = array();
+        $answer_data['user_id'] = array_key_exists($ext_num, $telnum_info) ? $telnum_info[$ext_num] : 0;
+        //通化的话单的id
+        $answer_data['callid'] = 0;
+        $answer_data['tel_num'] = $tel_num;
+        $answer_data['ext_num'] = $ext_num;
+        $answer_data['type'] = $tag;
+        $cus_data = $this->get_customerinfo_bytelnum($tel_num);
+        //通化的类型  是打进还是打出
+        $answer_data['cus_id'] = $cus_data['cus_id'];
+        $answer_data['contact_id'] = $cus_data['contact_id'];
+        $answer_data['flag'] = 'IN';
+        return $answer_data;
     }
 
     /**

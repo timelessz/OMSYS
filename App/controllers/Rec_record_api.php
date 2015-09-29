@@ -15,7 +15,8 @@ class Rec_record_api extends CI_Controller {
     }
 
     /**
-     * 
+     *  
+      打出电话
       //电话状态变为忙碌
       <?xml version="1.0" encoding="utf-8" ?>
       <Event attribute="BUSY">
@@ -65,6 +66,61 @@ class Rec_record_api extends CI_Controller {
       <Event attribute="IDLE">
       <ext id="326" />
       </Event>
+     * 
+      //打入的电话
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="RING">
+      <ext id="316" />
+      <visitor from="13698612743" />
+      </Event>
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="BUSY">
+      <ext id="316" />
+      </Event>
+
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="ANSWER">
+      <ext id="316" />
+      <visitor from="13698612743" />
+      </Event>
+
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="BYE">
+      <ext id="316" />
+      <visitor from="13698612743" />
+      </Event>
+
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Event attribute="IDLE">
+      <ext id="316" />
+      </Event>
+
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Cdr id="21020150929140022-0">
+      <callid>49395</callid>
+      <TimeStart>20150929140015</TimeStart>
+      <Type>IN</Type>
+      <Route>XO</Route>
+      <CPN>13698612743</CPN>
+      <CDPN>316</CDPN>
+      <TimeEnd>20150929140022</TimeEnd>
+      <Duration>4</Duration>
+      <TrunkNumber>88554123</TrunkNumber>
+      </Cdr>
+
+      <?xml version="1.0" encoding="utf-8" ?>
+      <Cdr id="20920150929140022-0">
+      <callid>49394</callid>
+      <TimeStart>20150929135957</TimeStart>
+      <Type>OU</Type>
+      <Route>OP</Route>
+      <CPN>13698612743</CPN>
+      <CDPN>316</CDPN>
+      <TimeEnd>20150929140022</TimeEnd>
+      <Duration>4</Duration>
+      <TrunkNumber>13698612743</TrunkNumber>
+      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
+      </Cdr>
      */
     /**
      * 思路解析
@@ -102,8 +158,9 @@ class Rec_record_api extends CI_Controller {
      * @todo 解析xml请求
      */
     public function rec($flag = 'jinan') {
-//        $xmldata = file_get_contents('php://input');
+        $xmldata = file_get_contents('php://input');
 //        file_put_contents('a.txt', $xmldata, FILE_APPEND);
+//        //打出去的 
 //        $xmldata = <<<xmldata
 //<Cdr id="14420150824104517-0">
 //    <callid>20666</callid>
@@ -112,35 +169,73 @@ class Rec_record_api extends CI_Controller {
 //    <Type>OU</Type>
 //    <Route>IP</Route>
 //    <CPN>208</CPN>
-//    <CDPN>013698612747</CDPN>
+//    <CDPN>013698612748</CDPN>
 //    <TimeEnd>20150824104517</TimeEnd>
 //    <Duration>73</Duration>
 //    <TrunkNumber>568116531</TrunkNumber>
 //    <Recording>20150824/326_013693848899_20150824-104404_20666</Recording>
 //    </Cdr>
 //xmldata;
-        $xmldata = <<<xmldata
-<Cdr id="25820150907112458-0">
- <callid>37015</callid>
- <outer id="148" />
- <TimeStart>20150907112307</TimeStart>
- <Type>OU</Type>
- <Route>XO</Route>
- <CPN>342</CPN>
- <CDPN>4006750000</CDPN>
- <TimeEnd>20150907112458</TimeEnd>
- <Duration>93</Duration>
- <TrunkNumber>86343263</TrunkNumber>
- <Recording>20150907/342_4006750000_20150907-112325_37015</Recording>
-</Cdr>
-xmldata;
-        echo '<pre>';
-        $xmldata = <<<xmldata
-<Event attribute="ANSWERED">
-   <outer id="186" from="013698612747" to="208" trunk="568116531" callid="20666" />
-   <ext id="208" />
-</Event>
-xmldata;
+//        $xmldata = <<<xmldata
+//<Event attribute="ANSWERED">
+//   <outer id="186" from="013698612748" to="208" trunk="568116531" callid="20666" />
+//   <ext id="208" />
+//</Event>
+//xmldata;
+
+        
+        
+//打进来的情况 会有两个cdr 数据
+//这是总机状态信息
+//<Cdr id="28220150929145023-0">
+//  <callid>49220</callid>
+//  <TimeStart>20150929145005</TimeStart>
+//  <Type>OU</Type>
+//  <Route>OP</Route>
+//  <CPN>13698612743</CPN>
+//  <CDPN>316</CDPN>
+//  <TimeEnd>20150929145023</TimeEnd>
+//  <Duration>2</Duration>
+//  <TrunkNumber>13698612743</TrunkNumber>
+//  <Recording>20150929/13698612743_316_20150929-145021_49220</Recording>
+//</Cdr>
+        
+        
+//xo  表示的是模拟中继   这种可以不用解析 直接跳出来
+//<Cdr id="28320150929145023-0">
+//  <callid>49222</callid>
+//  <TimeStart>20150929145018</TimeStart>
+//  <Type>IN</Type>
+//  <Route>XO</Route>
+//  <CPN>13698612743</CPN>
+//  <CDPN>316</CDPN>
+//  <TimeEnd>20150929145023</TimeEnd>
+//  <Duration>2</Duration>
+//  <TrunkNumber>88554123</TrunkNumber>
+//</Cdr>
+        
+        
+//打进来的
+//        $xmldata = <<<xmldata
+//<Cdr id="20920150929140022-0">
+//      <callid>49394</callid>
+//      <TimeStart>20150929135957</TimeStart>
+//      <Type>OU</Type>
+//      <Route>OP</Route>
+//      <CPN>13698612743</CPN>
+//      <CDPN>208</CDPN>
+//      <TimeEnd>20150929140022</TimeEnd>
+//      <Duration>4</Duration>
+//      <TrunkNumber>13698612743</TrunkNumber>
+//      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
+//      </Cdr>
+//xmldata;
+//        $xmldata = <<<xmldata
+//          <Event attribute="ANSWER">
+//          <ext id="208" />
+//          <visitor from="13698612743" />
+//          </Event>
+//xmldata;
         $this->_classify_query($xmldata, $flag);
     }
 
@@ -181,7 +276,6 @@ xmldata;
                 //根据answered_data数据获取数据
                 $cdr_data['cus_id'] = $answered_data['cus_id'];
                 $cdr_data['contact_id'] = $answered_data['contact_id'];
-//                print_r($cdr_data);
                 if ($cdr_data['duration']) {
                     //成功的话 这个返回值是 $status
                     $status = $this->R->insert_cdr_data($cdr_data);
@@ -195,13 +289,21 @@ xmldata;
                 //获取 answered 数据之后
                 $cdr_callid = $cdr_data['callid'];
                 $answered_callid = $answered_data['callid'];
-                if ($cdr_callid == $answered_callid) {
+                if ($answered_callid) {
+                    //打出的电话数据分析
+                    if ($cdr_callid == $answered_callid) {
+                        $answered_data['cdr_info'] = $cdr_data;
+                        $mem->set_expire($user_id, $answered_data, 28800);
+                        print_r($answered_data);
+                    } else {
+                        //如果不相等的 删除该键值
+                        $mem->delete($user_id);
+                    }
+                } else {
+                    //这个是打进来的电话   没有callid的情况
                     $answered_data['cdr_info'] = $cdr_data;
                     $mem->set_expire($user_id, $answered_data, 28800);
                     print_r($answered_data);
-                } else {
-                    //如果不相等的 删除该键值
-                    $mem->delete($user_id);
                 }
             case 'Event':
                 //表明时事件请求
@@ -210,7 +312,7 @@ xmldata;
 //                print_r($data);
                 switch ($root_attr) {
                     case'ANSWERED':
-                        //获取   分机号码=>用户的id
+                        //获取   分机号码=>用户的id  分机打出去的
                         $telnum_userinfo = $this->get_telnum_user_info($flag);
                         //应答类型的操作   需要匹配出来用户的id
                         $answered_data = $this->R->resolve_answered_data($data, $telnum_userinfo, $flag);
@@ -246,6 +348,23 @@ xmldata;
                                 $mem->set_expire($first_tel_key, '1', 28800);
                             }
                         }
+                        break;
+                    case 'ANSWER':
+                        //这个请求是外部给分机的电话号码
+                        //获取   分机号码=>用户的id
+                        $telnum_userinfo = $this->get_telnum_user_info($flag);
+                        //应答类型的操作   需要匹配出来用户的id
+                        $answer_data = $this->R->resolve_answer_data($data, $telnum_userinfo, $flag);
+                        //然后存储数据到memcache
+                        if (!$answer_data['user_id']) {
+                            //表示没有匹配到数据
+                            file_put_contents('error.log', "{$answer_data['ext_num']}没有绑定职员");
+                            return;
+                        }
+                        $mem = new Memcache_manage();
+                        $mem->memcache();
+                        $key = $answer_data['user_id'];
+                        $mem->set_expire($key, $answer_data, 28800);
                         break;
                     default:
                         //不执行操作
