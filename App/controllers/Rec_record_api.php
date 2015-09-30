@@ -159,7 +159,7 @@ class Rec_record_api extends CI_Controller {
      */
     public function rec($flag = 'jinan') {
         $xmldata = file_get_contents('php://input');
-//        file_put_contents('a.txt', $xmldata, FILE_APPEND);
+        file_put_contents('a.txt', $xmldata, FILE_APPEND);
 //        //打出去的 
 //        $xmldata = <<<xmldata
 //<Cdr id="14420150824104517-0">
@@ -209,33 +209,33 @@ class Rec_record_api extends CI_Controller {
 //  <TrunkNumber>88554123</TrunkNumber>
 //</Cdr>
 //打进来的
-        $xmldata = <<<xmldata
-<Cdr id="20920150929140022-0">
-      <callid>49394</callid>
-      <TimeStart>20150929135957</TimeStart>
-      <Type>OU</Type>
-      <Route>OP</Route>
-      <CPN>13698612750</CPN>
-      <CDPN>208</CDPN>
-      <TimeEnd>20150929140022</TimeEnd>
-      <Duration>4</Duration>
-      <TrunkNumber>13698612743</TrunkNumber>
-      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
-      </Cdr>
-xmldata;
-        $xmldata = <<<xmldata
-<Cdr id="46120150929165207-0">
-  <callid>49153</callid>
-  <TimeStart>20150929165202</TimeStart>
-  <Type>IN</Type>
-  <Route>XO</Route>
-  <CPN>13698612743</CPN>
-  <CDPN>316</CDPN>
-  <TimeEnd>20150929165207</TimeEnd>
-  <Duration>3</Duration>
-  <TrunkNumber>88554123</TrunkNumber>
-</Cdr>
-xmldata;
+//        $xmldata = <<<xmldata
+//<Cdr id="20920150929140022-0">
+//      <callid>49394</callid>
+//      <TimeStart>20150929135957</TimeStart>
+//      <Type>OU</Type>
+//      <Route>OP</Route>
+//      <CPN>13698612750</CPN>
+//      <CDPN>208</CDPN>
+//      <TimeEnd>20150929140022</TimeEnd>
+//      <Duration>4</Duration>
+//      <TrunkNumber>13698612743</TrunkNumber>
+//      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
+//      </Cdr>
+//xmldata;
+//        $xmldata = <<<xmldata
+//<Cdr id="46120150929165207-0">
+//  <callid>49153</callid>
+//  <TimeStart>20150929165202</TimeStart>
+//  <Type>IN</Type>
+//  <Route>XO</Route>
+//  <CPN>13698612743</CPN>
+//  <CDPN>316</CDPN>
+//  <TimeEnd>20150929165207</TimeEnd>
+//  <Duration>3</Duration>
+//  <TrunkNumber>88554123</TrunkNumber>
+//</Cdr>
+//xmldata;
 //        $xmldata = <<<xmldata
 //          <Event attribute="ANSWER">
 //          <ext id="208" />
