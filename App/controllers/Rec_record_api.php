@@ -182,9 +182,6 @@ class Rec_record_api extends CI_Controller {
 //   <ext id="208" />
 //</Event>
 //xmldata;
-
-        
-        
 //打进来的情况 会有两个cdr 数据
 //这是总机状态信息
 //<Cdr id="28220150929145023-0">
@@ -199,8 +196,6 @@ class Rec_record_api extends CI_Controller {
 //  <TrunkNumber>13698612743</TrunkNumber>
 //  <Recording>20150929/13698612743_316_20150929-145021_49220</Recording>
 //</Cdr>
-        
-        
 //xo  表示的是模拟中继   这种可以不用解析 直接跳出来
 //<Cdr id="28320150929145023-0">
 //  <callid>49222</callid>
@@ -213,27 +208,38 @@ class Rec_record_api extends CI_Controller {
 //  <Duration>2</Duration>
 //  <TrunkNumber>88554123</TrunkNumber>
 //</Cdr>
-        
-        
 //打进来的
-//        $xmldata = <<<xmldata
-//<Cdr id="20920150929140022-0">
-//      <callid>49394</callid>
-//      <TimeStart>20150929135957</TimeStart>
-//      <Type>OU</Type>
-//      <Route>OP</Route>
-//      <CPN>13698612743</CPN>
-//      <CDPN>208</CDPN>
-//      <TimeEnd>20150929140022</TimeEnd>
-//      <Duration>4</Duration>
-//      <TrunkNumber>13698612743</TrunkNumber>
-//      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
-//      </Cdr>
-//xmldata;
+        $xmldata = <<<xmldata
+<Cdr id="20920150929140022-0">
+      <callid>49394</callid>
+      <TimeStart>20150929135957</TimeStart>
+      <Type>OU</Type>
+      <Route>OP</Route>
+      <CPN>13698612750</CPN>
+      <CDPN>208</CDPN>
+      <TimeEnd>20150929140022</TimeEnd>
+      <Duration>4</Duration>
+      <TrunkNumber>13698612743</TrunkNumber>
+      <Recording>20150929/13698612743_316_20150929-140018_49394</Recording>
+      </Cdr>
+xmldata;
+        $xmldata = <<<xmldata
+<Cdr id="46120150929165207-0">
+  <callid>49153</callid>
+  <TimeStart>20150929165202</TimeStart>
+  <Type>IN</Type>
+  <Route>XO</Route>
+  <CPN>13698612743</CPN>
+  <CDPN>316</CDPN>
+  <TimeEnd>20150929165207</TimeEnd>
+  <Duration>3</Duration>
+  <TrunkNumber>88554123</TrunkNumber>
+</Cdr>
+xmldata;
 //        $xmldata = <<<xmldata
 //          <Event attribute="ANSWER">
 //          <ext id="208" />
-//          <visitor from="13698612743" />
+//          <visitor from="13698612750" />
 //          </Event>
 //xmldata;
         $this->_classify_query($xmldata, $flag);
@@ -280,7 +286,7 @@ class Rec_record_api extends CI_Controller {
                     //成功的话 这个返回值是 $status
                     $status = $this->R->insert_cdr_data($cdr_data);
                     if (!$status) {
-                        file_put_contents('error.log', "cdr数据解析添加到数据库失败  $xmldata");
+                        file_put_contents('error.log', "cdr数据解析添加到数据库失败  $xmldata", FILE_APPEND);
                         return;
                     } else {
                         $cdr_data['id'] = $status;
@@ -294,7 +300,7 @@ class Rec_record_api extends CI_Controller {
                     if ($cdr_callid == $answered_callid) {
                         $answered_data['cdr_info'] = $cdr_data;
                         $mem->set_expire($user_id, $answered_data, 28800);
-                        print_r($answered_data);
+//                        print_r($answered_data);
                     } else {
                         //如果不相等的 删除该键值
                         $mem->delete($user_id);
@@ -303,7 +309,7 @@ class Rec_record_api extends CI_Controller {
                     //这个是打进来的电话   没有callid的情况
                     $answered_data['cdr_info'] = $cdr_data;
                     $mem->set_expire($user_id, $answered_data, 28800);
-                    print_r($answered_data);
+//                    print_r($answered_data);
                 }
             case 'Event':
                 //表明时事件请求
@@ -319,7 +325,7 @@ class Rec_record_api extends CI_Controller {
                         //然后存储数据到memcache
                         if (!$answered_data['user_id']) {
                             //表示没有匹配到数据
-                            file_put_contents('error.log', "{$answered_data['ext_num']}没有绑定职员");
+                            file_put_contents('error.log', "{$answered_data['ext_num']}没有绑定职员", FILE_APPEND);
                             return;
                         }
                         $mem = new Memcache_manage();
@@ -342,7 +348,7 @@ class Rec_record_api extends CI_Controller {
                                 $status = $this->R->insert_first_tel_data($answered_data);
                                 //如果没有
                                 if (!$status) {
-                                    file_put_contents('error.log', "第一个电话添加失败 $xmldata");
+                                    file_put_contents('error.log', "第一个电话添加失败 $xmldata", FILE_APPEND);
                                     return;
                                 }
                                 $mem->set_expire($first_tel_key, '1', 28800);
